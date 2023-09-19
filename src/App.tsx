@@ -1,26 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {lazy, Suspense, useRef, useState} from "react";
+import {motion} from "framer-motion";
+
+const LazyComponent = lazy(() => import("./LazyComponent"))
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [isShown, setIsShown] = useState(false)
+    const boxRef = useRef<HTMLDivElement>(null);
+    return (
+        <div style={{userSelect: "none"}}>
+            <div
+                style={{
+                    width: 800,
+                    height: 700,
+                    position: "relative",
+                    border: "3px solid red"
+                }}
+                ref={boxRef}
+            >
+                <motion.div
+                    style={{
+
+                        width: "100px",
+                        height: "100px",
+                        backgroundColor: "red",
+                        position: "absolute",
+                        bottom: 100,
+                        right: 100
+                    }}
+                    dragElastic={0.1}
+                    drag
+                    dragMomentum={false}
+                    dragConstraints={boxRef}
+                />
+            </div>
+            {isShown && <>
+                <Suspense fallback={null}>
+                    <LazyComponent/>
+                </Suspense>
+            </>}
+            <button onClick={() => setIsShown(!isShown)}>Import lazy component</button>
+        </div>
+    );
 }
 
 export default App;
